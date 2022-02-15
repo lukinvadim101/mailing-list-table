@@ -1,0 +1,91 @@
+<!doctype html>
+    <html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>sodr-mailing-list-table</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
+    <script src="./jquery-3.2.1.slim.min.js"></script>
+    <script src="./popper.min.js"></script>
+    <script src="./bootstrap4.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.19.1/locale/bootstrap-table-ru-RU.min.js"></script>
+  </head>
+  <body>
+   <div class="container">
+    <h1 >Список рассылок</h1>
+    <input class="form-control search-input" type="text" id="customSearch" style="width: 20%;" placeholder="Поиск по статусу">
+    <table id="table"  
+      data-search="true"
+
+
+      >
+      <thead>
+        <tr>
+          <th data-field="status"   data-sortable="true">Статус</th>
+          <th data-field="date"     data-sortable="true" data-sorter="sortByDate">Дата</th>
+          <th data-field="coverage" data-sortable="true" data-sorter="sortByCoverage">Охват</th>
+          <th data-field="regions"  data-sortable="true">Регионы</th>
+          <th data-field="manage">Управление</th>
+        </tr>
+      </thead>
+    </table>
+   </div>
+
+    <script>
+      let data = [
+          { status: 'Запланирована',
+            date: '25.02.2022 10:00',
+            coverage: '251',
+            regions: 'Воронежская обл.,  Красноярский край',
+            manage: 'Отменить'
+          },
+          { status: 'В процессе',
+            date: '22.01.2022 10:00',
+            coverage: '14/251',
+            regions: 'Воронежская обл.',
+            manage: 'Отменить'
+          },
+          { status: 'Завершена',
+            date: '15.02.2022 10:00',
+            coverage: '133/161',
+            regions: 'Красноярский край',
+            manage: 'Результаты'
+          },
+        ]
+
+      $('#table').bootstrapTable({data:data})
+      
+      function sortByDate (a,b) {
+        function toDate (dateStr) {
+          const [dmy, time] = dateStr.split(" ")
+          const [hour, min] = time.split(":")
+          const [day, month, year] = dmy.split(".")
+
+          return Date.UTC(year, month - 1, day, hour, min)
+        }
+
+        return toDate(b) - toDate(a);
+      }
+
+      function sortByCoverage(a,b) {
+
+        function filterCoverage (str) {
+          if (str.includes('/')) {
+            const [delivered, sent] = str.split('/')
+            return delivered
+          } else return str
+        }
+        
+        return filterCoverage(b) - filterCoverage(a);
+        
+      }
+
+ 
+    </script>
+  </body>
+</html>
