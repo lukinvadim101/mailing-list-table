@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
     <script src="./jquery-3.2.1.slim.min.js"></script>
-    <script src="./popper.min.js"></script>
     <script src="./bootstrap4.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.19.1/locale/bootstrap-table-ru-RU.min.js"></script>
@@ -18,39 +17,88 @@
   <body>
    <div class="container">
     <h1 >Список рассылок</h1>
-    <input class="form-control search-input" type="text" id="customSearch" style="width: 20%;" placeholder="Поиск по статусу">
-    <table id="table"  
+    <!-- <input class="form-control search-input" type="text" id="customSearch" style="width: 20%;" placeholder="Поиск по статусу"> -->
+    <div class="buttons-toolbar">
+    </div>
+    <table id="mailingListTable" 
+
       data-search="true"
-
-
+      data-trim-on-search="false"
+      data-pagination="true"
+      data-key-events="true"
       >
       <thead>
         <tr>
+          <th data-field="id">№</th>
           <th data-field="status"   data-sortable="true">Статус</th>
           <th data-field="date"     data-sortable="true" data-sorter="sortByDate">Дата</th>
           <th data-field="coverage" data-sortable="true" data-sorter="sortByCoverage">Охват</th>
           <th data-field="regions"  data-sortable="true">Регионы</th>
-          <th data-field="manage">Управление</th>
+          <th data-field="manage"   data-formatter="manageFormatter">Управление</th>
         </tr>
       </thead>
     </table>
-   </div>
+
+    <table id="systemInfo" 
+    data-show-header="false">
+      <thead>
+        <th data-field="param">Информация о системе рассылок</th>
+        <th data-field="value"></th>
+      </thead>
+    </table>
+    <br>
+    <table id="systemVersion" 
+    data-show-header="false">
+      <thead>
+        <th data-field="param"></th>
+        <th data-field="value"></th>
+      </thead>
+    </table>
+
+   </div>    <!-- container -->
+ </div>
 
     <script>
-      let data = [
-          { status: 'Запланирована',
+
+      let systemVersion = [
+      { param: 'Документация к Системе версия от',
+        value: '25.01.2022'},
+      { param: 'Дата последнего обновления системы:',
+        value: '25.01.2022'},
+      { param: 'Описание последнего обновления.',
+        value: 'Исправлены ошибки, повышена устойчивость системы.'},
+      ]
+
+      let systemInfoData = [
+        { param: 'Статус системы',
+          value: '000'},
+        { param: 'Количество успешных рассылок с начала работы Системы:',
+          value: '101'},
+        { param: 'Количество подключенных менеджеров с WA:',
+          value: '10'},
+        { param: 'Количество подключенных поставщиков с WA:',
+          value: '1001'},
+        { param: 'Количество сельскохозяйственных культур для которых производится расчет:',
+          value: '111'},
+      ]
+  
+      let mailingData = [
+          { id: 1,
+            status: 'Запланирована',
             date: '25.02.2022 10:00',
             coverage: '251',
             regions: 'Воронежская обл.,  Красноярский край',
             manage: 'Отменить'
           },
-          { status: 'В процессе',
+          { id: 2,
+            status: 'В процессе',
             date: '22.01.2022 10:00',
             coverage: '14/251',
             regions: 'Воронежская обл.',
             manage: 'Отменить'
           },
-          { status: 'Завершена',
+          { id: 3,
+            status: 'Завершена',
             date: '15.02.2022 10:00',
             coverage: '133/161',
             regions: 'Красноярский край',
@@ -58,7 +106,9 @@
           },
         ]
 
-      $('#table').bootstrapTable({data:data})
+      $('#mailingListTable').bootstrapTable({data:mailingData})
+      $('#systemInfo').bootstrapTable({data:systemInfoData})
+      $('#systemVersion').bootstrapTable({data:systemVersion})
       
       function sortByDate (a,b) {
         function toDate (dateStr) {
@@ -73,7 +123,6 @@
       }
 
       function sortByCoverage(a,b) {
-
         function filterCoverage (str) {
           if (str.includes('/')) {
             const [delivered, sent] = str.split('/')
@@ -85,7 +134,55 @@
         
       }
 
- 
+      
+      function manageFormatter(val, row, index) {
+        // console.log('value', val);
+        // console.log('row', row);
+        // console.log('index', index);
+      
+        if (row.status === 'Завершена') {
+          return `<button class="btn btn-success" data-id=${row.id}>Результаты</button>`
+        } else {
+          return `<button class="btn btn-danger" data-id=${row.id}>Отменить</button>`
+        }
+      }
+
+
+      // $table.on('click-cell.bs.table', function (e, col, cell, el) {
+      //   console.log('e', e);
+      //   console.log('col', col );
+      //   console.log('cell', cell);
+      //   console.log('el',el);
+
+      //   // if (value !="type"){
+      //   //   alert($el.id+"-"+$el.status+"-"+$el.type);
+      //   // }
+      //   if (col === 'manage') {
+      //     $table.bootstrapTable('remove', {
+      //       field: 'id',
+      //       values: [el.id]
+      //     })
+      //   }
+       
+      // });
+
+  
+
+      $("#mailingListTable tbody tr td button").click(function(e){
+      // var col = ($(this).index());
+        let id = e.target.dataset.id;
+        let val = e.target.innerText;
+      // console.log('e', e);
+        // console.log(id);
+        // console.log(val);
+
+        if (val === 'Отменить') {
+          console.log('просто взять и отменить');
+        }
+        if (val === 'Результаты') {
+          console.log('посмотреть Результаты');
+        }
+      });
     </script>
   </body>
 </html>
