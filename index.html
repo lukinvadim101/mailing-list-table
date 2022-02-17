@@ -7,23 +7,29 @@
 
     <title>sodr-mailing-list-table</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
-    <script src="./jquery-3.2.1.slim.min.js"></script>
-    <script src="./bootstrap4.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.19.1/locale/bootstrap-table-ru-RU.min.js"></script>
+    <link rel="stylesheet" href="bootstrap4.min.css">
+    <link rel="stylesheet" href="bootstrap-table.min.css">
+    <script src="jquery-3.2.1.slim.min.js"></script>
+    <!-- <script src="./bootstrap4.min.js"></script> -->
+    <script src="bootstrap-table.min.js"></script>
+    <script src="bootstrap-table-ru-RU.min.js"></script>
   </head>
   <body>
    <div class="container">
-    <h1 >Список рассылок</h1>
-    <!-- <input class="form-control search-input" type="text" id="customSearch" style="width: 20%;" placeholder="Поиск по статусу"> -->
+    <br>
+    <br>
+    <h2 >Список рассылок</h2>
+    <br>
+    <input class="form-control search-input mb-3" type="text" id="customSearch" style="width: 38.5%;" placeholder="Поиск по всем параметрам">
     <div class="buttons-toolbar">
     </div>
-    <table id="mailingListTable" 
-
+    <table 
+      id="mailingListTable" 
+     
       data-search="true"
       data-trim-on-search="false"
+      data-search-highlight="true"
+      data-search-selector="#customSearch"
       data-pagination="true"
       data-key-events="true"
       >
@@ -32,26 +38,36 @@
           <th data-field="id">№</th>
           <th data-field="status"   data-sortable="true">Статус</th>
           <th data-field="date"     data-sortable="true" data-sorter="sortByDate">Дата</th>
-          <th data-field="coverage" data-sortable="true" data-sorter="sortByCoverage">Охват</th>
+          <th data-field="coverage" data-sortable="true" data-sorter="sortByCoverage" >Охват</th>
           <th data-field="regions"  data-sortable="true">Регионы</th>
           <th data-field="manage"   data-formatter="manageFormatter">Управление</th>
         </tr>
       </thead>
     </table>
-
-    <table id="systemInfo" 
-    data-show-header="false">
+    <br>
+    <br>
+    <h2 >Информация о системе рассылок</h2>
+    <br>
+    <table 
+      id="systemInfo" 
+      class="table-sm"
+      data-show-header="false">
       <thead>
-        <th data-field="param">Информация о системе рассылок</th>
+        <th data-field="param" data-width="650"></th>
         <th data-field="value"></th>
       </thead>
     </table>
     <br>
-    <table id="systemVersion" 
-    data-show-header="false">
+    <br>
+    <table 
+      id="systemVersion" 
+      class="table table-sm table-borderless"
+      data-show-header="false"
+      
+    >
       <thead>
-        <th data-field="param"></th>
-        <th data-field="value"></th>
+        <th data-field="param" data-width="650"></th>
+        <th data-field="value" data-formatter="infoFormatter"></th>
       </thead>
     </table>
 
@@ -63,10 +79,8 @@
       let systemVersion = [
       { param: 'Документация к Системе версия от',
         value: '25.01.2022'},
-      { param: 'Дата последнего обновления системы:',
-        value: '25.01.2022'},
-      { param: 'Описание последнего обновления.',
-        value: 'Исправлены ошибки, повышена устойчивость системы.'},
+      { param: 'Дата и описание последнего обновления системы:',
+        value: '25.01.2022, Исправлены ошибки, повышена устойчивость системы.'},
       ]
 
       let systemInfoData = [
@@ -136,37 +150,32 @@
 
       
       function manageFormatter(val, row, index) {
-        // console.log('value', val);
-        // console.log('row', row);
-        // console.log('index', index);
+        console.log('value', val);
+        console.log('row', row);
+        console.log('index', index);
+
       
         if (row.status === 'Завершена') {
-          return `<button class="btn btn-success" data-id=${row.id}>Результаты</button>`
-        } else {
-          return `<button class="btn btn-danger" data-id=${row.id}>Отменить</button>`
-        }
+          return `<button class="btn btn-success " data-id=${row.id}>Результаты</button>`
+        } 
+          // d-block m-auto
+        return `<button class="btn btn-danger " data-id=${row.id}>Отменить</button>`
+        
       }
 
+      function infoFormatter(val, row, index) {
+        console.log('value', val);
+        console.log('row', row);
+        console.log('index', index);
 
-      // $table.on('click-cell.bs.table', function (e, col, cell, el) {
-      //   console.log('e', e);
-      //   console.log('col', col );
-      //   console.log('cell', cell);
-      //   console.log('el',el);
+        if (row.param === 'Дата и описание последнего обновления системы:') {
+          return `<a style='cursor: pointer; color: blue' href="#">${val}</a>`
+        }
+        return val
+      
+      }
+      
 
-      //   // if (value !="type"){
-      //   //   alert($el.id+"-"+$el.status+"-"+$el.type);
-      //   // }
-      //   if (col === 'manage') {
-      //     $table.bootstrapTable('remove', {
-      //       field: 'id',
-      //       values: [el.id]
-      //     })
-      //   }
-       
-      // });
-
-  
 
       $("#mailingListTable tbody tr td button").click(function(e){
       // var col = ($(this).index());
